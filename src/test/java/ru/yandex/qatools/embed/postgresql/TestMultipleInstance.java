@@ -1,5 +1,6 @@
 package ru.yandex.qatools.embed.postgresql;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.yandex.qatools.embed.postgresql.distribution.Version;
 
@@ -12,7 +13,8 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
 
 public class TestMultipleInstance {
-    @Test
+	@Ignore("Downloading from http://get.enterprisedb.com/postgresql/postgresql-9.5.7-1-osx-binaries.zip may not work with a proxy")
+	@Test
     public void itShouldAllowToRunTwoInstancesWithDifferentVersions() throws Exception {
         final EmbeddedPostgres postgres0 = new EmbeddedPostgres();
         postgres0.start();
@@ -44,6 +46,7 @@ public class TestMultipleInstance {
         postgres1.stop();
     }
 
+    @Ignore("Downloading from http://get.enterprisedb.com/postgresql/postgresql-9.5.7-1-osx-binaries.zip may not work with a proxy")
     @Test
     public void itShouldAllowToRunTwoInstancesAtSameTimeAndWithDifferentVersions() throws Exception {
         final EmbeddedPostgres postgres0 = new EmbeddedPostgres(Version.Main.V9_5);

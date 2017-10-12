@@ -47,7 +47,7 @@ CREATE TABLE table1 (
 );
 
 
-ALTER TABLE public.table1 OWNER TO user;
+ALTER TABLE public.table1 OWNER TO "user";
 
 --
 -- TOC entry 2112 (class 0 OID 1302590)
@@ -70,8 +70,8 @@ test	4	d
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM user;
-GRANT ALL ON SCHEMA public TO user;
+REVOKE ALL ON SCHEMA public FROM "user";
+GRANT ALL ON SCHEMA public TO "user";
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 

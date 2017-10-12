@@ -6,6 +6,8 @@ import de.flapdoodle.embed.process.distribution.IVersion;
 import de.flapdoodle.embed.process.distribution.Platform;
 import de.flapdoodle.embed.process.store.IArtifactStore;
 import de.flapdoodle.embed.process.store.PostgresArtifactStoreBuilder;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.yandex.qatools.embed.postgresql.distribution.Version;
 
@@ -15,6 +17,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+@Ignore("Downloading from http://get.enterprisedb.com/postgresql/postgresql-9.5.7-1-osx-binaries.zip may not work with a proxy")
 public class TestDownloads {
 
     @Test

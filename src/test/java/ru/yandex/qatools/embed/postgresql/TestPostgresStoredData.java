@@ -83,6 +83,7 @@ public class TestPostgresStoredData {
 		final String           jdbcUrl          = embeddedPostgres.start();
 		Connection connection = DriverManager.getConnection(jdbcUrl);
 		try {
+			initSchema(connection);
 			checkRecords(connection);
 		} finally {
 			embeddedPostgres.stop();
