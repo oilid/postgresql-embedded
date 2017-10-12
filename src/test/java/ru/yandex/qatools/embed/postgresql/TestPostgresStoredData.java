@@ -23,7 +23,7 @@ public class TestPostgresStoredData {
 //	static File baseDir = null;
 	
 	@Rule
-	TemporaryFolder temporaryFolder = new TemporaryFolder();
+	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 //	@BeforeClass
 //	public static void setUpClass() throws Exception {

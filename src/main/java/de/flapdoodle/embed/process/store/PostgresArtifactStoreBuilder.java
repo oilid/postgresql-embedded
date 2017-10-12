@@ -1,6 +1,10 @@
 package de.flapdoodle.embed.process.store;
 
+import de.flapdoodle.embed.process.builder.TypedProperty;
+import de.flapdoodle.embed.process.config.store.IDownloadConfig;
+import de.flapdoodle.embed.process.extract.ITempNaming;
 import de.flapdoodle.embed.process.extract.UUIDTempNaming;
+import de.flapdoodle.embed.process.io.directories.IDirectory;
 import ru.yandex.qatools.embed.postgresql.Command;
 import ru.yandex.qatools.embed.postgresql.config.PostgresDownloadConfigBuilder;
 import ru.yandex.qatools.embed.postgresql.ext.SubdirTempDir;
@@ -18,7 +22,7 @@ public class PostgresArtifactStoreBuilder extends
 
     @Override
     public IArtifactStore build() {
-        return new CachedPostgresArtifactStore(get(DOWNLOAD_CONFIG), get(TEMP_DIR_FACTORY), get(EXECUTABLE_NAMING), get(DOWNLOADER));
+        return new CachedPostgresArtifactStore(get(TypedProperty.with("DownloadConfig",IDownloadConfig.class)), get(TypedProperty.with("TempDir",IDirectory.class)), get(TypedProperty.with("ExecutableNaming",ITempNaming.class)), get(TypedProperty.with("Downloader",IDownloader.class)));
     }
 
 }

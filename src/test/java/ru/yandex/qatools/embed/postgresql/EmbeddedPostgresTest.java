@@ -31,7 +31,7 @@ public class EmbeddedPostgresTest {
 
 	private EmbeddedPostgres postgres;
 	@Rule
-	TemporaryFolder temporaryFolder = new TemporaryFolder();
+	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Before
 	public void setUp() throws Exception {
@@ -83,7 +83,8 @@ public class EmbeddedPostgresTest {
 		ensurePostgresIsWorking(url);
 	}
 
-	private void ensurePostgresIsWorking(String url) {
+	private void ensurePostgresIsWorking(String url) throws ClassNotFoundException {
+//		Class.forName("org.postgresql.Driver");
 		try {
 			final Connection conn = DriverManager.getConnection(url);
 			assertThat(conn.createStatement().execute("CREATE TABLE films (code char(5));"), is(false));

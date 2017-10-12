@@ -22,12 +22,8 @@ public class EmptyFileSet implements IExtractedFileSet {
     }
 
     @Override
-    public File baseDir() {
+    public File generatedBaseDir() {
         return null;
     }
 
-    @Override
-    public boolean baseDirIsGenerated() {
-        return false;
-    }
 }

@@ -139,19 +139,26 @@
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.process</artifactId>
-            <version>2.0.1</version>
+            <version>1.41.2</version>
         </dependency>
         
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>23.0</version>
+            <version>19.0</version>
         </dependency>
 
+<!--         <dependency> -->
+<!--             <groupId>org.postgresql</groupId> -->
+<!--             <artifactId>postgresql</artifactId> -->
+<!--             <version>9.3-1100-jdbc41</version> -->
+<!--             <scope>test</scope> -->
+<!--         </dependency> -->
+        <!-- Diese Postgres-Version geht mit Java 1.6 -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.3-1100-jdbc41</version>
+            <version>9.4-1201-jdbc4</version>
             <scope>test</scope>
         </dependency>
 

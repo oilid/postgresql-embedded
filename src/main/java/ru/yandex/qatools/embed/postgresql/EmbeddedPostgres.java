@@ -163,7 +163,6 @@ public class EmbeddedPostgres {
 	 * @return empty if process has not been started yet
 	 */
 	public Optional<String> getConnectionUrl() {
-		Optional<PostgresConfig> config2 = getConfig();
 		PostgresConfig postgresConfig = getConfig().orNull();
 		if (postgresConfig != null) {
 			String formatConnUrl = this.formatConnUrl(postgresConfig);

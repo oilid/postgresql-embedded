@@ -52,7 +52,7 @@ public class CachedPostgresArtifactStore extends PostgresArtifactStore {
 			File pathFile = new File(dir.getPath(), "pgsql" + "-" + distribution.getVersion().asInDownloadPath());
 			File pgsqlPathFile = new File(pathFile, "pgsql");
 			if (pgsqlPathFile.exists()) {
-				final Builder extracted = builder(dir).baseDirIsGenerated(false);
+				final Builder extracted = builder(dir);
 				Iterator<File> iterateFiles = iterateFiles(pgsqlPathFile, TRUE, TRUE);
 				while (iterateFiles.hasNext()) {
 					File file = iterateFiles.next();
