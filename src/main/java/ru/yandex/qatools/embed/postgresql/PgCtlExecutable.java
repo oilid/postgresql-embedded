@@ -21,7 +21,7 @@ class PgCtlExecutable extends AbstractPGExecutable<PostgresConfig, PgCtlProcess>
     @Override
     protected PgCtlProcess start(Distribution distribution, PostgresConfig config, IRuntimeConfig runtime)
             throws IOException {
-        return new PgCtlProcess<>(distribution, config, runtime, this);
+        return new PgCtlProcess(distribution, config, runtime, this);
     }
 
     @Override

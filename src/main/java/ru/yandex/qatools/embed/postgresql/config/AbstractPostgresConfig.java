@@ -25,8 +25,8 @@ public abstract class AbstractPostgresConfig<C extends AbstractPostgresConfig> e
     protected final Net network;
     protected final Timeout timeout;
     protected final Credentials credentials;
-    protected List<String> args = new ArrayList<>();
-    protected List<String> additionalInitDbParams = new ArrayList<>();
+    protected List<String> args = new ArrayList<String>();
+    protected List<String> additionalInitDbParams = new ArrayList<String>();
 
     protected AbstractPostgresConfig(AbstractPostgresConfig config, Command postgres) {
         this(config.version, config.net(), config.storage, config.timeout(), config.credentials, new SupportConfig(postgres));

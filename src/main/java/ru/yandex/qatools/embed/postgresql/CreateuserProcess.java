@@ -24,7 +24,7 @@ public class CreateuserProcess<E extends CreateuserExecutable> extends AbstractP
     @Override
     protected List<String> getCommandLine(Distribution distribution, PostgresConfig config, IExtractedFileSet exe)
             throws IOException {
-        List<String> ret = new ArrayList<>();
+        List<String> ret = new ArrayList<String>();
         ret.add(exe.executable().getAbsolutePath());
         ret.addAll(asList(
                 "-h", config.net().host(),

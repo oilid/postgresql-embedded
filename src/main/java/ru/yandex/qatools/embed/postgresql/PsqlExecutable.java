@@ -21,7 +21,7 @@ public class PsqlExecutable extends AbstractPGExecutable<PostgresConfig, PsqlPro
     @Override
     protected PsqlProcess start(Distribution distribution, PostgresConfig config, IRuntimeConfig runtime)
             throws IOException {
-        return new PsqlProcess<>(distribution, config, runtime, this);
+        return new PsqlProcess(distribution, config, runtime, this);
     }
 
     @Override

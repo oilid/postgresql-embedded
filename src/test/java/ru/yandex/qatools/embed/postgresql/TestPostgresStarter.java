@@ -103,7 +103,7 @@ public class TestPostgresStarter {
 
     private static class TestHandler extends Handler {
 
-        public final List<LogRecord> RECORDS = new ArrayList<>();
+        public final List<LogRecord> RECORDS = new ArrayList<LogRecord>();
 
         @Override
         public void publish(LogRecord record) {

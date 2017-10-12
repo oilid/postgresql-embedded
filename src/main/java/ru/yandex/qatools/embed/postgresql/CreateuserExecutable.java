@@ -21,7 +21,7 @@ public class CreateuserExecutable extends AbstractPGExecutable<PostgresConfig, C
     @Override
     protected CreateuserProcess start(Distribution distribution, PostgresConfig config, IRuntimeConfig runtime)
             throws IOException {
-        return new CreateuserProcess<>(distribution, config, runtime, this);
+        return new CreateuserProcess(distribution, config, runtime, this);
     }
 
     @Override

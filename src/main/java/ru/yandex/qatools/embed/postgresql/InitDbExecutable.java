@@ -20,7 +20,7 @@ class InitDbExecutable extends AbstractPGExecutable<PostgresConfig, InitDbProces
     @Override
     protected InitDbProcess start(Distribution distribution, PostgresConfig config, IRuntimeConfig runtime)
             throws IOException {
-        return new InitDbProcess<>(distribution, config, runtime, this);
+        return new InitDbProcess(distribution, config, runtime, this);
     }
 
 

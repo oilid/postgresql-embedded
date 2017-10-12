@@ -21,9 +21,10 @@ public class TestPsqlImport extends AbstractPsqlTest {
         assertThat(conn, not(nullValue()));
 
         Statement statement = conn.createStatement();
-
+        
+        ResultSet res = statement.executeQuery("SELECT * FROM table1;");
         String expected;
-        try (ResultSet res = statement.executeQuery("SELECT * FROM table1;")) {
+        try {
             assertThat(res, not(nullValue()));
             String tableString = readTable(res);
 
@@ -34,19 +35,25 @@ public class TestPsqlImport extends AbstractPsqlTest {
                     "test\t3\tc\n" +
                     "test\t4\td\n";
             assertEquals(expected, tableString);
+        } finally {
+        	res.close();
         }
 
         assertThat(conn.createStatement().execute("INSERT INTO table1 VALUES ('test',5,'e');"), is(false));
         assertThat(conn.createStatement().execute("INSERT INTO table1 VALUES ('test',6,'f');"), is(false));
-
-        try (ResultSet res = statement.executeQuery("SELECT * FROM table1;")) {
-            assertThat(res, not(nullValue()));
-            String tableString = readTable(res);
+        
+        ResultSet res2 = statement.executeQuery("SELECT * FROM table1;");
+        
+        try {
+            assertThat(res2, not(nullValue()));
+            String tableString = readTable(res2);
 
             assertThat("Missing content in relation 'table1' in dump file!", tableString, not(nullValue()));
 
             expected += "test\t5\te\n" + "test\t6\tf\n";
             assertEquals(expected, tableString);
+        } finally {
+        	res2.close();
         }
 
     }

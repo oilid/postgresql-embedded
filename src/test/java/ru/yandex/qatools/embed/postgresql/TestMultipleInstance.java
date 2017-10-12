@@ -62,11 +62,16 @@ public class TestMultipleInstance {
     }
 
     private void checkVersion(String jdbcUrl, String expectedVersion) throws Exception {
-        try (final Connection conn = DriverManager.getConnection(jdbcUrl);
-             final Statement statement = conn.createStatement()) {
+    	final Connection conn = DriverManager.getConnection(jdbcUrl);
+        final Statement statement = conn.createStatement();
+        
+        try {
             assertThat(statement.execute("SELECT version();"), is(true));
             assertThat(statement.getResultSet().next(), is(true));
             assertThat(statement.getResultSet().getString("version"), containsString(expectedVersion));
+        } finally {
+        	conn.close();
+        	statement.close();
         }
     }
 }

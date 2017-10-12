@@ -56,7 +56,7 @@ class InitDbProcess<E extends InitDbExecutable> extends AbstractPGProcess<E, Ini
     @Override
     protected List<String> getCommandLine(Distribution distribution, PostgresConfig config, IExtractedFileSet exe)
             throws IOException {
-        List<String> ret = new ArrayList<>();
+        List<String> ret = new ArrayList<String>();
         ret.add(exe.executable().getAbsolutePath());
         if (getConfig().credentials() != null) {
             final File pwFile = createTempFile(SubdirTempDir.defaultInstance(), "pwfile" + randomUUID());
@@ -83,7 +83,7 @@ class InitDbProcess<E extends InitDbExecutable> extends AbstractPGProcess<E, Ini
         ProcessOutput outputConfig = runtimeConfig.getProcessOutput();
         LogWatchStreamProcessor logWatch = new LogWatchStreamProcessor(
                 "database system is ready to accept connections",
-                new HashSet<>(asList("[initdb error]")), StreamToLineProcessor.wrap(outputConfig.getOutput()));
+                new HashSet<String>(asList("[initdb error]")), StreamToLineProcessor.wrap(outputConfig.getOutput()));
         Processors.connect(process.getReader(), logWatch);
         Processors.connect(process.getError(), StreamToLineProcessor.wrap(outputConfig.getError()));
         logWatch.waitForResult(getConfig().timeout().startupTimeout());

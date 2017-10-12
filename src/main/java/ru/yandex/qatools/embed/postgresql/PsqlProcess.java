@@ -23,7 +23,7 @@ public class PsqlProcess<E extends PsqlExecutable> extends AbstractPGProcess<E, 
     @Override
     protected List<String> getCommandLine(Distribution distribution, PostgresConfig config, IExtractedFileSet exe)
             throws IOException {
-        List<String> ret = new ArrayList<>();
+        List<String> ret = new ArrayList<String>();
         ret.add(exe.executable().getAbsolutePath());
         ret.addAll(Arrays.asList(
                 "-h", config.net().host(),

@@ -21,7 +21,7 @@ class CreateDbExecutable extends AbstractPGExecutable<PostgresConfig, CreateDbPr
     @Override
     protected CreateDbProcess start(Distribution distribution, PostgresConfig config, IRuntimeConfig runtime)
             throws IOException {
-        return new CreateDbProcess<>(distribution, config, runtime, this);
+        return new CreateDbProcess(distribution, config, runtime, this);
     }
 
     @Override

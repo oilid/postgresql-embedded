@@ -34,7 +34,7 @@ public class PostgresStarter<E extends AbstractPGExecutable<PostgresConfig, P>, 
     }
 
     public static PostgresStarter<PostgresExecutable, PostgresProcess> getInstance(IRuntimeConfig config) {
-        return new PostgresStarter<>(PostgresExecutable.class, config);
+        return new PostgresStarter(PostgresExecutable.class, config);
     }
 
     public static PostgresStarter<PostgresExecutable, PostgresProcess> getDefaultInstance() {
@@ -43,7 +43,7 @@ public class PostgresStarter<E extends AbstractPGExecutable<PostgresConfig, P>, 
 
     public static IRuntimeConfig runtimeConfig(Command cmd) {
         LogWatchStreamProcessor logWatch = new LogWatchStreamProcessor(
-                "started", new HashSet<>(singletonList("failed")),
+                "started", new HashSet<String>(singletonList("failed")),
                 new Slf4jStreamProcessor(getLogger("postgres"), Slf4jLevel.TRACE));
         return new RuntimeConfigBuilder()
                 .defaults(cmd)
@@ -52,7 +52,7 @@ public class PostgresStarter<E extends AbstractPGExecutable<PostgresConfig, P>, 
 
     public static <E extends AbstractPGExecutable<PostgresConfig, P>, P extends AbstractPGProcess<E, P>>
     PostgresStarter<E, P> getCommand(Command command, IRuntimeConfig config) {
-        return new PostgresStarter<>(command.executableClass(), config);
+        return new PostgresStarter(command.executableClass(), config);
     }
 
     public static <E extends AbstractPGExecutable<PostgresConfig, P>, P extends AbstractPGProcess<E, P>>
