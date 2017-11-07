@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.yandex.qatools.embed</groupId>
     <artifactId>postgresql-embedded</artifactId>
-    <version>3.1.0_jdk1.6</version>
+    <version>3.1.1_jdk1.6-SNAPSHOT</version>
     <name>Embedded PostgreSQL (based on Flapdoodle-OSS embedded services)</name>
 
     <description>An embedded PostgreSQL...</description>
