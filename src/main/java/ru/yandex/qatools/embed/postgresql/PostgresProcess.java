@@ -200,7 +200,7 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 			throws IOException {
 		List<String> ret = new ArrayList<String>();
 		String name = config.supportConfig().getName();
-		
+
 		if ("postgres".equals(name)) {
 			ret.addAll(asList(exe.executable().getAbsolutePath(), "-p", String.valueOf(config.net().port()), "-h",
 					config.net().host(), "-D", config.storage().dbDir().getAbsolutePath()));
@@ -209,8 +209,7 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 					String.format("-o \"-p %s\" \"-h %s\"", config.net().port(), config.net().host()), "-D",
 					config.storage().dbDir().getAbsolutePath(), "-w", "start"));
 		} else {
-			throw new RuntimeException(
-					"Failed to launch Postgres: Unknown command " + name + "!");
+			throw new RuntimeException("Failed to launch Postgres: Unknown command " + name + "!");
 		}
 		return ret;
 	}
@@ -232,7 +231,8 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 	@Override
 	protected final void onAfterProcessStart(ProcessControl process, IRuntimeConfig runtimeConfig) throws IOException {
 		final Storage storage = getConfig().storage();
-//		final Path pidFilePath = Paths.get(storage.dbDir().getAbsolutePath(), "postmaster.pid");
+		// final Path pidFilePath = Paths.get(storage.dbDir().getAbsolutePath(),
+		// "postmaster.pid");
 		final File pidFile = new File(storage.dbDir().getAbsolutePath(), "postmaster.pid");
 		int timeout = TIMEOUT;
 		while (!pidFile.exists() && ((timeout = timeout - 100) > 0)) {
@@ -298,7 +298,8 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 				args = ArrayUtils.addAll(args, cliArgs);
 			}
 			runCmd(getConfig(), runtimeConfig, Psql, "",
-					new HashSet<String>(singletonList("import into " + getConfig().storage().dbName() + " failed")), args);
+					new HashSet<String>(singletonList("import into " + getConfig().storage().dbName() + " failed")),
+					args);
 		}
 	}
 
@@ -318,31 +319,43 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 				args = ArrayUtils.addAll(args, cliArgs);
 			}
 			runCmd(getConfig(), runtimeConfig, PgRestore, "",
-					new HashSet<String>(singletonList("restore into " + getConfig().storage().dbName() + " failed")), args);
+					new HashSet<String>(singletonList("restore into " + getConfig().storage().dbName() + " failed")),
+					args);
 		}
 	}
 
-	public void exportToFile(File file) {
+	public void exportToFile(File file, String... cliArgs) {
+
+		String[] args = { "-U", getConfig().credentials().username(), "-d", getConfig().storage().dbName(), "-h",
+				getConfig().net().host(), "-p", String.valueOf(getConfig().net().port()), "-f",
+				file.getAbsolutePath() };
+		if (ArrayUtils.isNotEmpty(cliArgs)) {
+			args = ArrayUtils.addAll(args, cliArgs);
+		}
 		runCmd(getConfig(), runtimeConfig, PgDump, "",
-				new HashSet<String>(singletonList("export from " + getConfig().storage().dbName() + " failed")), "-U",
-				getConfig().credentials().username(), "-d", getConfig().storage().dbName(), "-h",
-				getConfig().net().host(), "-p", String.valueOf(getConfig().net().port()), "-f", file.getAbsolutePath());
+				new HashSet<String>(singletonList("export from " + getConfig().storage().dbName() + " failed")), args);
 	}
 
-	public void exportSchemeToFile(File file) {
-		runCmd(getConfig(), runtimeConfig, PgDump, "",
-				new HashSet<String>(singletonList("export from " + getConfig().storage().dbName() + " failed")), "-U",
-				getConfig().credentials().username(), "-d", getConfig().storage().dbName(), "-h",
+	public void exportSchemeToFile(File file, String... cliArgs) {
+		String[] args = { "-U", getConfig().credentials().username(), "-d", getConfig().storage().dbName(), "-h",
 				getConfig().net().host(), "-p", String.valueOf(getConfig().net().port()), "-f", file.getAbsolutePath(),
-				"-s");
+				"-s" };
+		if (ArrayUtils.isNotEmpty(cliArgs)) {
+			args = ArrayUtils.addAll(args, cliArgs);
+		}
+		runCmd(getConfig(), runtimeConfig, PgDump, "",
+				new HashSet<String>(singletonList("export from " + getConfig().storage().dbName() + " failed")), args);
 	}
 
-	public void exportDataToFile(File file) {
-		runCmd(getConfig(), runtimeConfig, PgDump, "",
-				new HashSet<String>(singletonList("export from " + getConfig().storage().dbName() + " failed")), "-U",
-				getConfig().credentials().username(), "-d", getConfig().storage().dbName(), "-h",
+	public void exportDataToFile(File file, String... cliArgs) {
+		String[] args = { "-U", getConfig().credentials().username(), "-d", getConfig().storage().dbName(), "-h",
 				getConfig().net().host(), "-p", String.valueOf(getConfig().net().port()), "-f", file.getAbsolutePath(),
-				"-a");
+				"-a" };
+		if (ArrayUtils.isNotEmpty(cliArgs)) {
+			args = ArrayUtils.addAll(args, cliArgs);
+		}
+		runCmd(getConfig(), runtimeConfig, PgDump, "",
+				new HashSet<String>(singletonList("export from " + getConfig().storage().dbName() + " failed")), args);
 	}
 
 	public boolean isProcessReady() {
