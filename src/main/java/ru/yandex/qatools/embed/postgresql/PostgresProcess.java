@@ -8,7 +8,6 @@ import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static org.apache.commons.io.FileUtils.readLines;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.yandex.qatools.embed.postgresql.Command.CreateDb;
 import static ru.yandex.qatools.embed.postgresql.Command.InitDb;
@@ -68,12 +67,12 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 		this.runtimeConfig = runtimeConfig;
 	}
 
-	private static String runCmd(PostgresConfig config, IRuntimeConfig parentRuntimeCfg, Command cmd,
+	private static Integer runCmd(PostgresConfig config, IRuntimeConfig parentRuntimeCfg, Command cmd,
 			String successOutput, Set<String> failOutput, String... args) {
 		return runCmd(false, config, parentRuntimeCfg, cmd, successOutput, failOutput, args);
 	}
 
-	private static String runCmd(boolean silent, PostgresConfig config, IRuntimeConfig parentRuntimeCfg, Command cmd,
+	private static Integer runCmd(boolean silent, PostgresConfig config, IRuntimeConfig parentRuntimeCfg, Command cmd,
 			String successOutput, Set<String> failOutput, String... args) {
 		try {
 			final LogWatchStreamProcessor logWatch = new LogWatchStreamProcessor(successOutput, failOutput,
@@ -113,8 +112,9 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 			final Executable<?, ? extends AbstractPGProcess> exec = getCommand(cmd, runtimeCfg).prepare(postgresConfig);
 			AbstractPGProcess proc = exec.start();
 			logWatch.waitForResult(DEFAULT_CMD_TIMEOUT);
-			proc.waitFor();
-			return logWatch.getOutput();
+			// the exit value of the process. By convention, 0 indicates normal termination.
+			int exitCode = proc.waitFor();
+			return Integer.valueOf(exitCode);
 		} catch (IOException e) {
 			if (!silent) {
 				LOGGER.warn("Failed to run command {}", cmd.commandName(), e);
@@ -131,7 +131,8 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 	private static boolean shutdownPostgres(PostgresConfig config, IRuntimeConfig runtimeConfig) {
 		Set<String> emptySet = emptySet();
 		try {
-			return isEmpty(runCmd(true, config, runtimeConfig, Command.PgCtl, "server stopped", emptySet, "stop"));
+			Integer exitCode = runCmd(true, config, runtimeConfig, Command.PgCtl, "server stopped", emptySet, "stop");
+			return Integer.valueOf(0).equals(exitCode);
 		} catch (Exception e) {
 			LOGGER.trace("Failed to stop postgres by pg_ctl!", e);
 		}
@@ -257,10 +258,10 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 
 		int trial = 0;
 		do {
-			String output = runCmd(getConfig(), runtimeConfig, CreateDb, "",
+			Integer exitCode = runCmd(getConfig(), runtimeConfig, CreateDb, "",
 					new HashSet<String>(singleton("database creation failed")), storage.dbName());
 			try {
-				if (isEmpty(output) || !output.contains("could not connect to database")) {
+				if (Integer.valueOf(0).equals(exitCode)) {
 					this.processReady = true;
 					break;
 				}
@@ -276,9 +277,10 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 	 *
 	 * @param file
 	 *            The file to import into database
+	 * @return the exit value of the process. By convention, 0 indicates normal termination. {@code null} or other values indicates an error.
 	 */
-	public void importFromFile(File file) {
-		importFromFileWithArgs(file);
+	public Integer importFromFile(File file) {
+		return importFromFileWithArgs(file);
 	}
 
 	/**
@@ -288,8 +290,10 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 	 * @param cliArgs
 	 *            additional arguments for psql (be sure to separate args from
 	 *            their values)
+	 * @return the exit value of the process. By convention, 0 indicates normal termination. {@code null} or other values indicates an error.
 	 */
-	public void importFromFileWithArgs(File file, String... cliArgs) {
+	public Integer importFromFileWithArgs(File file, String... cliArgs) {
+		Integer exitCode = null;
 		if (file.exists()) {
 			String[] args = { "-U", getConfig().credentials().username(), "-d", getConfig().storage().dbName(), "-h",
 					getConfig().net().host(), "-p", String.valueOf(getConfig().net().port()), "-f",
@@ -297,10 +301,11 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 			if (cliArgs != null && cliArgs.length != 0) {
 				args = ArrayUtils.addAll(args, cliArgs);
 			}
-			runCmd(getConfig(), runtimeConfig, Psql, "",
+			exitCode = runCmd(getConfig(), runtimeConfig, Psql, "",
 					new HashSet<String>(singletonList("import into " + getConfig().storage().dbName() + " failed")),
 					args);
 		}
+		return exitCode;
 	}
 
 	/**
@@ -310,8 +315,10 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 	 * @param cliArgs
 	 *            additional arguments for psql (be sure to separate args from
 	 *            their values)
+	 * @return the exit value of the process. By convention, 0 indicates normal termination. {@code null} or other values indicates an error.
 	 */
-	public void restoreFromFile(File file, String... cliArgs) {
+	public Integer restoreFromFile(File file, String... cliArgs) {
+		Integer exitCode = null;
 		if (file.exists()) {
 			String[] args = { "-U", getConfig().credentials().username(), "-d", getConfig().storage().dbName(), "-h",
 					getConfig().net().host(), "-p", String.valueOf(getConfig().net().port()) };
@@ -319,44 +326,47 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 				args = ArrayUtils.addAll(args, cliArgs);
 			}
 			args = ArrayUtils.add(args, file.getAbsolutePath()); 
-			runCmd(getConfig(), runtimeConfig, PgRestore, "",
+			exitCode = runCmd(getConfig(), runtimeConfig, PgRestore, "",
 					new HashSet<String>(singletonList("restore into " + getConfig().storage().dbName() + " failed")),
 					args);
 		}
+		return exitCode;
 	}
-
-	public void exportToFile(File file, String... cliArgs) {
-
+	
+	public Integer exportToFile(File file, String... cliArgs) {
 		String[] args = { "-U", getConfig().credentials().username(), "-d", getConfig().storage().dbName(), "-h",
 				getConfig().net().host(), "-p", String.valueOf(getConfig().net().port()), "-f",
 				file.getAbsolutePath() };
 		if (ArrayUtils.isNotEmpty(cliArgs)) {
 			args = ArrayUtils.addAll(args, cliArgs);
 		}
-		runCmd(getConfig(), runtimeConfig, PgDump, "",
+		Integer exitCode = runCmd(getConfig(), runtimeConfig, PgDump, "",
 				new HashSet<String>(singletonList("export from " + getConfig().storage().dbName() + " failed")), args);
+		return exitCode;
 	}
 
-	public void exportSchemeToFile(File file, String... cliArgs) {
+	public Integer exportSchemeToFile(File file, String... cliArgs) {
 		String[] args = { "-U", getConfig().credentials().username(), "-d", getConfig().storage().dbName(), "-h",
 				getConfig().net().host(), "-p", String.valueOf(getConfig().net().port()), "-f", file.getAbsolutePath(),
 				"-s" };
 		if (ArrayUtils.isNotEmpty(cliArgs)) {
 			args = ArrayUtils.addAll(args, cliArgs);
 		}
-		runCmd(getConfig(), runtimeConfig, PgDump, "",
+		Integer exitCode = runCmd(getConfig(), runtimeConfig, PgDump, "",
 				new HashSet<String>(singletonList("export from " + getConfig().storage().dbName() + " failed")), args);
+		return exitCode;
 	}
 
-	public void exportDataToFile(File file, String... cliArgs) {
+	public Integer exportDataToFile(File file, String... cliArgs) {
 		String[] args = { "-U", getConfig().credentials().username(), "-d", getConfig().storage().dbName(), "-h",
 				getConfig().net().host(), "-p", String.valueOf(getConfig().net().port()), "-f", file.getAbsolutePath(),
 				"-a" };
 		if (ArrayUtils.isNotEmpty(cliArgs)) {
 			args = ArrayUtils.addAll(args, cliArgs);
 		}
-		runCmd(getConfig(), runtimeConfig, PgDump, "",
+		Integer exitCode = runCmd(getConfig(), runtimeConfig, PgDump, "",
 				new HashSet<String>(singletonList("export from " + getConfig().storage().dbName() + " failed")), args);
+		return exitCode;
 	}
 
 	public boolean isProcessReady() {
