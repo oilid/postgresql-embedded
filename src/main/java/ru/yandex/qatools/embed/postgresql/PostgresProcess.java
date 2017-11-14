@@ -314,10 +314,11 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 	public void restoreFromFile(File file, String... cliArgs) {
 		if (file.exists()) {
 			String[] args = { "-U", getConfig().credentials().username(), "-d", getConfig().storage().dbName(), "-h",
-					getConfig().net().host(), "-p", String.valueOf(getConfig().net().port()), file.getAbsolutePath() };
+					getConfig().net().host(), "-p", String.valueOf(getConfig().net().port()) };
 			if (cliArgs != null && cliArgs.length != 0) {
 				args = ArrayUtils.addAll(args, cliArgs);
 			}
+			args = ArrayUtils.add(args, file.getAbsolutePath()); 
 			runCmd(getConfig(), runtimeConfig, PgRestore, "",
 					new HashSet<String>(singletonList("restore into " + getConfig().storage().dbName() + " failed")),
 					args);
