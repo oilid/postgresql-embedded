@@ -245,7 +245,7 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 		try {
 			pid = Integer.valueOf(readLines(pidFile).get(0));
 		} catch (Exception e) {
-			LOGGER.error("Failed to read PID file ({})", e.getMessage(), e);
+			LOGGER.info("Failed to read PID file ({})", e.getMessage());
 		}
 		if (pid != -1) {
 			setProcessId(pid);
