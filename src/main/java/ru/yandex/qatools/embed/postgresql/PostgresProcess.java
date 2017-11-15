@@ -171,7 +171,7 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 
 	protected final boolean sendStopToPostgresqlInstance() {
 		final boolean result = shutdownPostgres(getConfig(), runtimeConfig);
-		if (runtimeConfig.getArtifactStore() instanceof PostgresArtifactStore) {
+		if (runtimeConfig != null && runtimeConfig.getArtifactStore() instanceof PostgresArtifactStore) {
 			final IDirectory tempDir = ((PostgresArtifactStore) runtimeConfig.getArtifactStore()).getTempDir();
 			if (tempDir != null && tempDir.asFile() != null && tempDir.isGenerated()) {
 				LOGGER.info("Cleaning up after the embedded process (removing {})...",
@@ -242,12 +242,8 @@ public class PostgresProcess extends AbstractPGProcess<PostgresExecutable, Postg
 			} catch (InterruptedException ie) {
 				/* safe to ignore */ }
 		}
-		int pid = -1;
-		try {
-			pid = Integer.valueOf(readLines(pidFile).get(0));
-		} catch (Exception e) {
-			LOGGER.info("Failed to read PID file ({})", e.getMessage());
-		}
+		int pid = Integer.valueOf(readLines(pidFile).get(0));
+		
 		if (pid != -1) {
 			setProcessId(pid);
 		} else {
